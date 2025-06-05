@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 // ETH imports
 import { useAccount, useWriteContract } from "wagmi";
 
-import { sepolia } from "wagmi/chains";
+import { polygon } from "wagmi/chains";
 import { parseEther } from "viem";
 
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
@@ -147,16 +147,12 @@ export default function MintMusic() {
         category: categoryName,
       };
 
-      const uploadMetadata = await axios.post(
-        "https://api.pinata.cloud/pinning/pinJSONToIPFS",
-        JSON.stringify(metadata),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${pinata_jwt}`,
-          },
+      const uploadMetadata = await axios.post('https://api.pinata.cloud/pinning/pinJSONToIPFS', metadata, {
+        headers: {
+          'Authorization': `Bearer ${pinata_jwt}`,
+          'Content-Type': 'application/json'
         }
-      );
+      })
 
       const metadataUrl = `${pinataBaseUrl}${uploadMetadata.data.IpfsHash}`;
 
@@ -169,7 +165,7 @@ export default function MintMusic() {
             abi: polymintabi,
             address: ethContractAddress,
             functionName: "safeMint",
-            chainId: sepolia.id,
+            chainId: polygon.id,
             args: [address, metadataUrl],
             account: address,
             value: parseEther("1", "wei"),
@@ -198,7 +194,7 @@ export default function MintMusic() {
         );
       } else {
         // Solana mint
-        const umi = createUmi(clusterApiUrl("devnet"));
+        const umi = createUmi(clusterApiUrl("mainnet-beta"));
         umi.use(walletAdapterIdentity(wallet));
         const mint = generateSigner(umi);
         const mintInstruc = createV1(umi, {
