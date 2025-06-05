@@ -5,7 +5,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'amber-recent-carp-488.mypinata.cloud',
+        hostname: 'amaranth-naval-bee-206.mypinata.cloud',
         port: '',
         pathname: '/ipfs/**',
         search: '',
