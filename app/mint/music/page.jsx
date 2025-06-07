@@ -38,6 +38,7 @@ const pinata_jwt = process.env.NEXT_PUBLIC_PINATA_JWT;
 const pinataBaseUrl = process.env.NEXT_PUBLIC_PINATA_BASE_URL;
 const sol_receiver = process.env.NEXT_PUBLIC_SOL_RECEIVER_ADDRESS;
 const ethContractAddress = process.env.NEXT_PUBLIC_ETH_CONTRACT_ADDRESS;
+const solanaApi = process.env.NEXT_PUBLIC_SOLANA_API
 
 export default function MintMusic() {
   const { isEthereum } = useSelectedNetwork();
@@ -88,6 +89,15 @@ export default function MintMusic() {
     }
     if (!uploadedMusicFile) {
       toast.error("Please select an music file.");
+      return;
+    }
+
+    if (!categoryName) {
+      toast.error("Please select category");
+      return;
+    }
+    if (!titleText) {
+      toast.error("Please select music title");
       return;
     }
 
@@ -177,24 +187,24 @@ export default function MintMusic() {
                 nft_owner: address,
                 token_id: 1,
                 content_type: "music",
-                image_uri,
+                image_uri: image_uri,
                 metadata_uri: metadataUrl,
                 title: titleText,
                 description: "",
                 category: categoryName,
               });
 
-              toast.success("NFT minted successfully on Ethereum!");
+              toast.success("NFT minted successfully on Polygon!");
               setMintingSuccess(true);
             },
             onError: () => {
-              toast.error("Minting failed on Ethereum.");
+              toast.error("Minting failed on Polygon.");
             },
           }
         );
       } else {
         // Solana mint
-        const umi = createUmi(clusterApiUrl("mainnet-beta"));
+        const umi = createUmi(solanaApi);
         umi.use(walletAdapterIdentity(wallet));
         const mint = generateSigner(umi);
         const mintInstruc = createV1(umi, {
@@ -225,7 +235,8 @@ export default function MintMusic() {
           mint_address: mint.publicKey,
           nft_owner: wallet.publicKey.toString(),
           content_type: "music",
-          image_uri,
+          music_uri: music_uri,
+          image_uri: image_uri,
           metadata_uri: metadataUrl,
           title: titleText,
           description: "",
@@ -273,6 +284,7 @@ export default function MintMusic() {
             <input
               type="file"
               ref={inputImageFile}
+              accept=".jpg, .jpeg, .png"
               onChange={(e) =>
                 setUploadedImageFile(e.target.files ? e.target.files[0] : null)
               }
@@ -283,11 +295,12 @@ export default function MintMusic() {
 
             <p className="text-sm mt-4 text-gray-600 mb-4">
               Upload the music that will represent your NFM
-              <b> (JPEG and PNG Files ONLY, max file size: 1Gb)</b>
+              <b> (.mp3 Audio files ONLY, max file size: 1Gb)</b>
             </p>
-    
+
             <input
               type="file"
+              accept=".mp3"
               ref={inputMusicFile}
               onChange={(e) =>
                 setUploadedMusicFile(e.target.files ? e.target.files[0] : null)

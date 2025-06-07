@@ -65,7 +65,7 @@ export default function Home() {
               </div>
               <h2 className="text-xl font-semibold mb-1">{nft.title || "Untitled NFT"}</h2>
               {nft.content_type === "music" && <audio controls={true} src={nft.music_uri}></audio>}
-              {nft.content_type === "video" && <video controls={true} src={nft.music_uri}></video>}
+              {nft.content_type === "video" && <video controls={true} src={nft.video_uri}></video>}
               <p className="text-gray-500 text-sm capitalize mb-1">{nft.content_type} NFT</p>
               <p className="text-gray-500 text-sm capitalize mb-1">{nft.category}</p>
               <p className="text-gray-400 text-xs mt-1">{nft.description || "No description"}</p>

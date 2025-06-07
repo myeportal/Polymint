@@ -44,6 +44,7 @@ const pinata_jwt = process.env.NEXT_PUBLIC_PINATA_JWT;
 const pinataBaseUrl = process.env.NEXT_PUBLIC_PINATA_BASE_URL;
 const sol_receiver = process.env.NEXT_PUBLIC_SOL_RECEIVER_ADDRESS;
 const ethContractAddress = process.env.NEXT_PUBLIC_ETH_CONTRACT_ADDRESS
+const solanaApi= process.env.NEXT_PUBLIC_SOLANA_API
 
 
 
@@ -168,17 +169,17 @@ export default function MintArticle() {
                 category: categoryName,
               });
 
-              toast.success("NFT minted successfully on Ethereum!");
+              toast.success("NFT minted successfully on Polygon!");
               setMintingSuccess(true);
             },
             onError: () => {
-              toast.error("Minting failed on Ethereum.");
+              toast.error("Minting failed on Polygon.");
             },
           }
         );
       } else {
         // Solana mint
-        const umi = createUmi(clusterApiUrl("mainnet-beta"));
+        const umi = createUmi(NEXT_PUBLIC_SOLANA_API);
         umi.use(walletAdapterIdentity(wallet));
         const mint = generateSigner(umi);
         const mintInstruc = createV1(umi, {
@@ -262,6 +263,7 @@ export default function MintArticle() {
             <input
               type="file"
               ref={inputImageFile}
+              accept=".jpg, .jpeg, .png"
               onChange={(e) => setUploadedImageFile(e.target.files ? e.target.files[0] : null)}
               className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 
                         file:rounded-md file:border-0 file:text-sm file:font-semibold 

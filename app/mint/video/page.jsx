@@ -38,6 +38,8 @@ const pinata_jwt = process.env.NEXT_PUBLIC_PINATA_JWT;
 const pinataBaseUrl = process.env.NEXT_PUBLIC_PINATA_BASE_URL;
 const sol_receiver = process.env.NEXT_PUBLIC_SOL_RECEIVER_ADDRESS;
 const ethContractAddress = process.env.NEXT_PUBLIC_ETH_CONTRACT_ADDRESS;
+const solanaApi = process.env.NEXT_PUBLIC_SOLANA_API
+
 
 export default function MintVideo() {
   const { isEthereum } = useSelectedNetwork();
@@ -91,6 +93,15 @@ export default function MintVideo() {
       return;
     }
 
+    if (!categoryName){
+      toast.error("Please select category");
+      return;
+    }
+    if (!titleText){
+      toast.error("Please select video title");
+      return;
+    }
+
     const imageFormData = new FormData();
     const videoFormData = new FormData();
 
@@ -120,7 +131,7 @@ export default function MintVideo() {
 
       const uploadMusic = await axios.post(
         "https://api.pinata.cloud/pinning/pinFileToIPFS",
-        musicFormData,
+        videoFormData,
         {
           headers: { Authorization: `Bearer ${pinata_jwt}` },
           onUploadProgress: (progressEvent) => {
@@ -136,13 +147,13 @@ export default function MintVideo() {
 
       setShowUploadModal(false); // Hide image upload modal
 
-      const music_uri = `${pinataBaseUrl}${uploadMusic.data.IpfsHash}`;
+      const video_uri = `${pinataBaseUrl}${uploadMusic.data.IpfsHash}`;
 
       const metadata = {
         name: titleText,
         image: image_uri,
-        music: music_uri,
-        video: "",
+        music: "",
+        video: video_uri,
         description: "",
         category: categoryName,
       };
@@ -176,25 +187,25 @@ export default function MintVideo() {
                 collection_address: ethContractAddress,
                 nft_owner: address,
                 token_id: 1,
-                content_type: "music",
-                image_uri,
+                content_type: "video",
+                image_uri: image_uri,
                 metadata_uri: metadataUrl,
                 title: titleText,
                 description: "",
                 category: categoryName,
               });
 
-              toast.success("NFT minted successfully on Ethereum!");
+              toast.success("NFT minted successfully on Polygon!");
               setMintingSuccess(true);
             },
             onError: () => {
-              toast.error("Minting failed on Ethereum.");
+              toast.error("Minting failed on Polygon.");
             },
           }
         );
       } else {
         // Solana mint
-        const umi = createUmi(clusterApiUrl("mainnet-beta"));
+        const umi = createUmi(solanaApi);
         umi.use(walletAdapterIdentity(wallet));
         const mint = generateSigner(umi);
         const mintInstruc = createV1(umi, {
@@ -220,12 +231,12 @@ export default function MintVideo() {
 
         const sig = await transactionInstruc.sendAndConfirm(umi);
         console.log(base58.deserialize(sig.signature));
-
         await http.post("/create_sol_nft", {
           mint_address: mint.publicKey,
           nft_owner: wallet.publicKey.toString(),
-          content_type: "music",
-          image_uri,
+          content_type: "video",
+          image_uri: image_uri,
+          video_uri: video_uri,
           metadata_uri: metadataUrl,
           title: titleText,
           description: "",
@@ -273,6 +284,7 @@ export default function MintVideo() {
             <input
               type="file"
               ref={inputImageFile}
+              accept=".jpg, .jpeg, .png"
               onChange={(e) =>
                 setUploadedImageFile(e.target.files ? e.target.files[0] : null)
               }
@@ -283,12 +295,13 @@ export default function MintVideo() {
 
             <p className="text-sm mt-4 text-gray-600 mb-4">
               Upload the video that will represent your NFV
-              <b> (JPEG and PNG Files ONLY, max file size: 1Gb)</b>
+              <b> (.mp4 video Files ONLY, max file size: 1Gb)</b>
             </p>
 
             <input
               type="file"
               ref={inputVideoFile}
+              accept=".mp4"
               onChange={(e) =>
                 setUploadedVideoFile(e.target.files ? e.target.files[0] : null)
               }

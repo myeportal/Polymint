@@ -26,12 +26,14 @@ router.post("/create_evm_nft", async (req, res) => {
             video_uri
         } = req.body;
 
-        if (!content_type || !collection_address || token_id == null || !nft_owner || !metadata_uri || !title || !category) {
+
+        if (!content_type || !collection_address || token_id == null || !nft_owner || !metadata_uri || !title || !category || !image_uri) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
         const baseData = {
             collection_address,
+            image_uri,
             token_id,
             nft_owner,
             content_type,
@@ -47,14 +49,13 @@ router.post("/create_evm_nft", async (req, res) => {
                 }
                 await evm_nftModel.create({
                     ...baseData,
-                    image_uri,
                     description
                 });
                 break;
 
             case "music":
-                if (!music_uri) {
-                    return res.status(400).json({ error: "Missing music_uri for music type" });
+                if (!music_uri || !image_uri) {
+                    return res.status(400).json({ error: "Missing music_uri or image_uri for music type" });
                 }
                 await evm_nftModel.create({
                     ...baseData,
@@ -63,8 +64,8 @@ router.post("/create_evm_nft", async (req, res) => {
                 break;
 
             case "video":
-                if (!video_uri) {
-                    return res.status(400).json({ error: "Missing video_uri for video type" });
+                if (!video_uri || !image_uri) {
+                    return res.status(400).json({ error: "Missing video_uri or image_uri for video type" });
                 }
                 await evm_nftModel.create({
                     ...baseData,
@@ -111,7 +112,8 @@ router.post("/create_sol_nft", async (req, res) => {
             content_type,
             metadata_uri,
             title,
-            category
+            category,
+            image_uri
         };
 
         switch (content_type) {
@@ -127,8 +129,8 @@ router.post("/create_sol_nft", async (req, res) => {
                 break;
 
             case "music":
-                if (!music_uri) {
-                    return res.status(400).json({ error: "Missing music_uri for music type" });
+                if (!music_uri || !image_uri) {
+                    return res.status(400).json({ error: "Missing music_uri or image_uri for music type" });
                 }
                 await sol_nftModel.create({
                     ...baseData,
@@ -137,8 +139,8 @@ router.post("/create_sol_nft", async (req, res) => {
                 break;
 
             case "video":
-                if (!video_uri) {
-                    return res.status(400).json({ error: "Missing video_uri for video type" });
+                if (!video_uri || !image_uri) {
+                    return res.status(400).json({ error: "Missing video_uri or image_uri for video type" });
                 }
                 await sol_nftModel.create({
                     ...baseData,
