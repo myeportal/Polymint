@@ -179,7 +179,7 @@ export default function MintArticle() {
         );
       } else {
         // Solana mint
-        const umi = createUmi(NEXT_PUBLIC_SOLANA_API);
+        const umi = createUmi(solanaApi);
         umi.use(walletAdapterIdentity(wallet));
         const mint = generateSigner(umi);
         const mintInstruc = createV1(umi, {
@@ -221,7 +221,7 @@ export default function MintArticle() {
         setMintingSuccess(true);
       }
     } catch (err) {
-      console.log("skdfjadlkasj")
+      console.log(err)
       if (err?.shortMessage) {
         toast.error(`Upload or minting failed, Reason: ${err.shortMessage} `)
       }
