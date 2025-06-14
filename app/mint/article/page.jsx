@@ -49,7 +49,6 @@ const mintFees= process.env.NEXT_PUBLIC_MINT_FEES
 
 
 
-
 export default function MintArticle() {
   const { isEthereum } = useSelectedNetwork();
   const { address } = useAccount(); //eth
