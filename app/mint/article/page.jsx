@@ -45,6 +45,8 @@ const pinataBaseUrl = process.env.NEXT_PUBLIC_PINATA_BASE_URL;
 const sol_receiver = process.env.NEXT_PUBLIC_SOL_RECEIVER_ADDRESS;
 const ethContractAddress = process.env.NEXT_PUBLIC_ETH_CONTRACT_ADDRESS
 const solanaApi= process.env.NEXT_PUBLIC_SOLANA_API
+const mintFees= process.env.NEXT_PUBLIC_MINT_FEES
+
 
 
 
@@ -197,7 +199,7 @@ export default function MintArticle() {
             transferSol(umi, {
               source: umi.identity,
               destination: sol_receiver,
-              amount: sol(0.3),
+              amount: sol(parseFloat(mintFees)),
             })
           )
           .add(setComputeUnitPrice(umi, { microLamports: 10000 }))
