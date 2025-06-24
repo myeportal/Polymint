@@ -21,7 +21,9 @@ import { parseEther } from "viem";
 
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import {
+  createNft,
   createV1,
+  mplTokenMetadata,
   TokenStandard,
 } from "@metaplex-foundation/mpl-token-metadata";
 import { clusterApiUrl } from "@solana/web3.js";
@@ -36,6 +38,7 @@ import {
 import { base58 } from "@metaplex-foundation/umi/serializers";
 import {
   setComputeUnitPrice,
+  SPL_TOKEN_PROGRAM_ID,
   transferSol,
 } from "@metaplex-foundation/mpl-toolbox";
 
@@ -182,15 +185,15 @@ export default function MintArticle() {
         // Solana mint
         const umi = createUmi(solanaApi);
         umi.use(walletAdapterIdentity(wallet));
+        umi.use(mplTokenMetadata())
         const mint = generateSigner(umi);
-        const mintInstruc = createV1(umi, {
+        const mintInstruc = createNft(umi, {
           mint,
           authority: umi.identity,
           name: titleText,
           symbol: "PM",
           uri: metadataUrl,
           sellerFeeBasisPoints: percentAmount(0),
-          tokenStandard: TokenStandard.NonFungible,
         });
 
         const transactionInstruc = transactionBuilder()
