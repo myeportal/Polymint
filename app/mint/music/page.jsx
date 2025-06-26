@@ -192,6 +192,7 @@ export default function MintMusic() {
                 token_id: 1,
                 content_type: "music",
                 image_uri: image_uri,
+                music_uri: music_uri,
                 metadata_uri: metadataUrl,
                 title: titleText,
                 description: "",

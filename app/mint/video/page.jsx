@@ -192,6 +192,7 @@ export default function MintVideo() {
                 token_id: 1,
                 content_type: "video",
                 image_uri: image_uri,
+                video_uri: video_uri,
                 metadata_uri: metadataUrl,
                 title: titleText,
                 description: "",
